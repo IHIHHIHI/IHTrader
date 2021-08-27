@@ -76,6 +76,41 @@ class Agent:
                 self.ratio_portfolio_value
             )
 
+        def decide_action(self, pred_value, pred_policy, epsilon):
+            confidence = 0.
+
+            pred = pred_policy
+            if pred is None:
+                pred = pred_value
+
+            if pred is None:
+                #예측 값이 없을 경우 탐험
+                epsilon = 1
+            else:
+                # 값이 모두 같은 경우 탐험
+                maxpred = np.max(pred) #최댓값 뽑아서
+                if(pred == maxpred).all(): #행렬과 비교(스칼라가 행렬로 넓혀짐)한 값이 모두 참이면
+                    epsilon = 1
+
+            # 탐험 결정
+            if np.random.rand() < epsilon:
+                exploration = True
+                if np.random.rand() < self.exploration_base:
+                    action = self.ACTION_BUY #매수
+                else:
+                    action = np.random.randint(self.NUM_ACTIONS - 1) + 1 #매도 혹은 홀드
+            else:
+                exploration = False
+                action = np.argmax(pred)
+
+            confidence = .5
+            if pred_policy is not None:
+                confidence = pred[action]
+            elif pred_value is not None:
+                confidence = utils.sigmoid(pred[action])
+
+            return action , confidence , exploration
+
 
 
 
