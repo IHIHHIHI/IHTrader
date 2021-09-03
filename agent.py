@@ -111,6 +111,19 @@ class Agent:
 
             return action , confidence , exploration
 
+        def validate_action(self, action):
+            if action == Agent.ACTION_BUY:
+                #적어도 1주를 살 수 있는지 확인
+                if self.balance < self.environment.get_price() * (1 + self.TRADING_CHARGE) * self.min_trading_unit:
+                    return False
+            elif action == Agent.ACTION_SELL:
+                #주식 잔고가 있는지 확인
+                if self.num_stocks <= 0:
+                    return False
+            return True
+
+        
+
 
 
 
