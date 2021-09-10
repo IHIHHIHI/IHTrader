@@ -58,4 +58,15 @@ class Network:
     def load_model(self, model_path):
         if model_path is not None:
             self.model.load_weights(model_path)
-            
+
+    @classmethod
+    def get_shared_network(cls, net = 'dnn' , num_steps = 1 , input_dim = 0):
+        with graph.as_default():
+            if sess is not None:
+                set_session(sess)
+            if net == 'dnn':
+                return DNN.get_network_head(Input(input_dim,))
+            elif net == 'lstm':
+                return LSTM.get_network_head(Input(num_steps,input_dim))
+            elif net == 'cnn':
+                return CNN.get_network_head(Input(1,num_steps,input_dim))
