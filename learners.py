@@ -359,11 +359,38 @@ class ReinforcementLearner:
                 max_pv = max_portfolio_value, cnt_win = epoch_win_cnt
             ))
 
-        def save_models(self):
-            if self.value_network is not None and self.value_network_path is not None:
-                self.value_network.save_mode(self.value_network_path)
-            if self.policy_network is not None and self.policy_network_path is not None:
-                self.policy_network.save_mode(self.policy_network_path)
+    def save_models(self):
+        if self.value_network is not None and self.value_network_path is not None:
+            self.value_network.save_mode(self.value_network_path)
+        if self.policy_network is not None and self.policy_network_path is not None:
+            self.policy_network.save_mode(self.policy_network_path)
 
+
+class DQNLearner(ReinforcementLearner):
+    def __init__(self, *args, value_network_path=None, **kwargs):
+        super.__init__(*args,**kwargs)
+        self.value_network_path = value_network_path
+        self.init_value_network()
+
+    def get_batch(self, batch_size, delayed_reward, discount_factor):
+        memory = zip(
+            reversed(self.memory_sample[-batch_size:]),
+            reversed(self.memory_action[-batch_size:]),
+            reversed(self.memory_value[-batch_size:]),
+            reversed(self.memory_reward[-batch_size:]),
+        )
+        x = np.zeros((batch_size, self.num_steps, self.num_features))
+        y_value = np.zeros((batch_size, self.agent.NUM_ACTIONS))
+        value_max_next = 0
+        reward_next = self.memory_reward[-1]
+        for i, (sample,action, value, reward) in enumerate(memory):
+            x[i] = sample
+            y_value[i] = value
+            r = (delayed_reward + reward_next - reward * 2) * 100
+            y_value[i, action] = r + discount_factor * value_max_next
+            value_max_next = value.max()
+            reward_next = reward
+
+        return x, y_value, None
 
 
