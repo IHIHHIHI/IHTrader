@@ -76,7 +76,7 @@ class DNN(Network):
         super().__init__(*args,**kwargs)
         with graph.as_default():
             if sess is not None:
-            set_session(sess)
+                set_session(sess)
         inp = None
         output = None
         if self.shared_network is None:
@@ -154,7 +154,7 @@ class LSTMNetwork(Network):
 
 class CNN(Network):
     def __init__(self, *args, num_steps=1, **kwargs):
-        super().__init__(*args, **kwargs):
+        super().__init__(*args, **kwargs)
         with graph.as_default():
             if sess is not None:
                 set_session(sess)
