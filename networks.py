@@ -112,5 +112,45 @@ class DNN(Network):
     def predict(self, sample):
         sample = np.array(sample).reshape((1, self.input_dim))
         return super().predict(sample)
-    
+
+class LSTMNetwork(Network):
+    def __init__(self, *args, num_steps=1, **kwargs):
+        super().__init__(*args, **kwargs)
+        with graph.as_default():
+            if sess is not None:
+                set_session(sess)
+            self.num_steps = num_steps
+            inp = None
+            output = None
+            if self.shared_network is None:
+                inp = Input((self.num_steps, self.input_dim))
+                output = self.get_network_head(inp).output
+            else:
+                inp = self.shared_network.input
+                output = self.shared_network.output
+            output = Dense(self.output_dim, activation=self.activation, kernel_initializer='random_normal')(output)
+            self.model = Model(inp, output)
+            self.model.compile(optimizer=SGD(lr = self.lr), loss = self.loss)
+
+        @staticmethod
+        def get_network_head(inp):
+            output = LSTM(256, dropout=0.1, return_sequences=True, stateful=False, kernel_initializer='random_normal')(inp)
+            output = BatchNormalization()(output)
+            output = LSTM(128, dropout=0.1, return_sequences=True, stateful=False, kernel_initializer='random_normal')(output)
+            output = BatchNormalization()(output)
+            output = LSTM(64, dropout=0.1, return_sequences=True, stateful=False, kernel_initializer='random_normal')(output)
+            output = BatchNormalization()(output)
+            output = LSTM(32, dropout=0.1, return_sequences=True, stateful=False, kernel_initializer='random_normal')(output)
+            output = BatchNormalization()(output)
+            return Model(inp, output)
+
+        def train_on_batch(self, x, y):
+            x = np.array(x).reshape((-1,self.num_steps, self.input_dim))
+            return super().train_on_batch(x, y)
+
+        def predict(self, sample):
+            sample = np.array(sample).reshape((1,self.num_steps, self.input_dim))
+            return super().predict(sample)
+
+
 
