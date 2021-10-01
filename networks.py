@@ -152,5 +152,52 @@ class LSTMNetwork(Network):
             sample = np.array(sample).reshape((1,self.num_steps, self.input_dim))
             return super().predict(sample)
 
+class CNN(Network):
+    def __init__(self, *args, num_steps=1, **kwargs):
+        super().__init__(*args, **kwargs):
+        with graph.as_default():
+            if sess is not None:
+                set_session(sess)
+            self.num_steps = num_steps
+            inp = None
+            output = None
+            if self.shared_network is None:
+                inp = Input((self.num_steps, self.input_dim, 1))
+                output = self.get_network_head(inp).output
+            else:
+                inp = self.shared_network.input
+                output = self.shared_network.output
+            output = Dense(self.output_dim, activation=self.activation, kernel_initializer='random_normal')(output)
+            self.model = Model(inp, output)
+            self.model.compile(optimizer=SGD(lr = self.lr), loss = self.loss)
+
+    @staticmethod
+    def get_network_head(inp):
+        output = Conv2D(256, kernel_size=(1, 5),padding='same', activation='sigmoid',kernel_initializer='random_normal')(inp)
+        output = BatchNormalization()(output)
+        output = MaxPooling2D(pool_size=(1, 2))(output)
+        output = Dropout(0.1)(output)
+        output = Conv2D(128, kernel_size=(1, 5),padding='same', activation='sigmoid',kernel_initializer='random_normal')(output)
+        output = BatchNormalization()(output)
+        output = MaxPooling2D(pool_size=(1, 2))(output)
+        output = Dropout(0.1)(output)
+        output = Conv2D(64, kernel_size=(1, 5),padding='same', activation='sigmoid',kernel_initializer='random_normal')(output)
+        output = BatchNormalization()(output)
+        output = MaxPooling2D(pool_size=(1, 2))(output)
+        output = Dropout(0.1)(output)
+        output = Conv2D(32, kernel_size=(1, 5),padding='same', activation='sigmoid',kernel_initializer='random_normal')(output)
+        output = BatchNormalization()(output)
+        output = MaxPooling2D(pool_size=(1, 2))(output)
+        output = Dropout(0.1)(output)
+        output.Flatten()(output)
+        return Model(inp, output)
+
+    def train_on_batch(self,x, y):
+        x = np.array(x).reshape((-1 , self.num_steps, self.input_dim, 1))
+        return super().train_on_batch(x,y)
+
+    def predict(self, sample):
+        sample = np.array(sample).reshape((-1, self.num_steps, self.input_dim, 1))
+        return super().predict(sample)
 
 
