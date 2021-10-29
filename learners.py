@@ -223,7 +223,7 @@ class ReinforcementLearner:
             "DF:{discount_factor} TU:[{min_trading_unit},{max_trading_unit}] DRT:{delayed_reward_threshold}"
         ).format(
             code=self.stock_code, rl=self.rl_method, net=self.net,
-            lr=self.lr, discount_factor=self.discount_factor,
+            lr=self.lr, discount_factor=discount_factor,
             min_trading_unit=self.agent.min_trading_unit,
             max_trading_unit=self.agent.max_trading_unit,
             delayed_reward_threshold=self.agent.delayed_reward_threshold
@@ -318,10 +318,10 @@ class ReinforcementLearner:
 
             # 에포크 종료 후 학습
             if learning:
-                self.fit()
+                self.fit(delayed_reward, discount_factor)
 
             # 에포크 관련 정보 로그 기록
-            num_epoches_digit = len(str(self.num_epoches))
+            num_epoches_digit = len(str(num_epoches))
             epoch_str = str(epoch + 1).rjust(num_epoches_digit, '0')
             time_end_epoch = time.time()
             elapsed_time_epoch = time_end_epoch - time_start_epoch
@@ -331,7 +331,7 @@ class ReinforcementLearner:
                          "#Expl.:{}/{} #Buy:{} #Sell:{} #Hold:{} "
                          "#Stocks:{} PV:{:,.0f} "
                          "LC:{} Loss:{:.6f} ET:{:.4f}".format(
-                self.stock_code, epoch_str, self.num_epoches, epsilon,
+                self.stock_code, epoch_str, num_epoches, epsilon,
                 self.exploration_cnt, self.itr_cnt,
                 self.agent.num_buy, self.agent.num_sell,
                 self.agent.num_hold, self.agent.num_stocks,
@@ -339,7 +339,7 @@ class ReinforcementLearner:
                 self.loss, elapsed_time_epoch))
 
             # 에포크 관련 정보 가시화
-            self.visualize(epoch_str, self.num_epoches, epsilon)
+            self.visualize(epoch_str, num_epoches, epsilon)
 
             # 학습 관련 정보 갱신
             max_portfolio_value = max(
@@ -368,7 +368,7 @@ class ReinforcementLearner:
 
 class DQNLearner(ReinforcementLearner):
     def __init__(self, *args, value_network_path=None, **kwargs):
-        super.__init__(*args,**kwargs)
+        super().__init__(*args,**kwargs)
         self.value_network_path = value_network_path
         self.init_value_network()
 

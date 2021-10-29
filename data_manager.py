@@ -53,16 +53,20 @@ def preprocess(data):
 
     return data
 
-def load_data(fpath, date_from, date_to, ver='v2'):
-    header = None if ver == 'v1' else 0
+def load_data(fpath, date_from, date_to, ver='v1'):
+#    header = None if ver == 'v1' else 0
+    header = 0
     data = pd.read_csv(fpath, thousands=',', header=header, converters={'date':lambda x : str(x)})
+
+    print(data)
 
     #데이터 전처리
     data = preprocess(data)
 
+
     #기간 필터링
     data['date'] = data['date'].str.replace('-','')
-    data = data[(data['date' >= date_from]) & (data['date'] <= date_to)]
+    data = data[(data['date'] >= date_from) & (data['date'] <= date_to)]
     data = data.dropna()
 
     #차트 데이터 분리
@@ -79,3 +83,4 @@ def load_data(fpath, date_from, date_to, ver='v2'):
         training_data = training_data.apply(np.tanh)
     else:
         raise Exception('Invalid version.')
+    return chart_data, training_data

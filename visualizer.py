@@ -47,7 +47,7 @@ class Visualizer:
              outvals_policy=[], exps=None, learning_idxes=None,
              initial_balance=None, pvs=None):
         with lock:
-            x = np.arrange(len(actions)) #모든 차트가 공유할 x축 데이터
+            x = np.arange(len(actions)) #모든 차트가 공유할 x축 데이터
             actions = np.array(actions) #행동 배열
             #가치 신경망의 출력 배열
             outvals_value = np.array(outvals_value)
@@ -125,8 +125,8 @@ class Visualizer:
             self.axes[4].set_ylabel('PV')
             for ax in _axes:
                 ax.set_xlim(xlim) #x축 limit 재설정
-                ax.get_xaxis().get_major_formatter().get_scientific(False) #과학적 표기 비활성화
-                ax.get_yaxis().get_major_formatter().get_scientific(False) #과학적 표기 비활성화
+                ax.get_xaxis().get_major_formatter().set_scientific(False) #과학적 표기 비활성화
+                ax.get_yaxis().get_major_formatter().set_scientific(False) #과학적 표기 비활성화
                 #x축 간격을 일정하게 설정
                 ax.ticklabel_format(useOffset=False)
     def save(self, path):

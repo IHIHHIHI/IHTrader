@@ -44,7 +44,7 @@ class Network:
     def train_on_batch(self,x, y):
         loss = 0.
         with self.lock:
-            history = self.model.fit(x, y, epoches = 10, verbose=False)
+            history = self.model.fit(x, y, epochs = 10, verbose=False)
             loss += np.sum(history.history['loss'])
         return loss
 

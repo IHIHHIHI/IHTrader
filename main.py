@@ -11,7 +11,7 @@ import data_manager
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--stock_code', nargs='+')
-    parser.add_argument('--ver', choices=['v1','v2'],default='v2')
+    parser.add_argument('--ver', choices=['v1','v1'],default='v1')
     parser.add_argument('--rl_method', choices=['dqn', 'pg', 'ac', 'a2c', 'a3c'])
     parser.add_argument('--net', choices=['dnn', 'lstm', 'cnn'],default='dnn')
     parser.add_argument('--num_steps', type=int, default=1)
@@ -100,7 +100,7 @@ if __name__ == '__main__':
         #강화학습 시작
         learner = None
         if args.rl_method != 'a3c':
-            common_params.update({'stock_code':stock_code, 'v2':chart_data,
+            common_params.update({'stock_code':stock_code, 'chart_data':chart_data,
                                   'training_data' : training_data, 'min_trading_unit' : min_trading_unit,
                                   'max_trading_unit' : max_trading_unit})
             if args.rl_method == 'dqn':
