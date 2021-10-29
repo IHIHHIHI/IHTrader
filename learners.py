@@ -435,7 +435,7 @@ class ActorCriticLearner(ReinforcementLearner):
         if self.policy_network is None:
             self.init_policy_network(shared_network=shared_network)
 
-def get_batch(self, batch_size, delayed_reward, discount_factor):
+    def get_batch(self, batch_size, delayed_reward, discount_factor):
         memory = zip(
             reversed(self.memory_sample[-batch_size:]),
             reversed(self.memory_action[-batch_size:]),
