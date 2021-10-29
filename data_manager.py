@@ -44,7 +44,7 @@ def preprocess(data):
     data['high_close_ratio'] = (data['high'].values - data['close'].values) / data['close'].values
     data['low_close_ratio'] = (data['low'].values - data['close'].values) / data['close'].values
     data['close_lastclose_ratio'] = np.zeros(len(data))
-    data.loc[1:, 'close_lastclose_ratio'] = (data['close'][1:].values - data['close'][:-1].values) / data['close'][
+    data.loc[1:, 'close_lastclose_ratio'] = (data['close'][1:].values - data['close'][:-1].values) / data['close'][:-1].values
     data['volume_lastvolume_ratio'] = np.zeros(len(data))
     data.loc[1:, 'volume_lastvolume_ratio'] = (
         (data['volume'][1:].values - data['volume'][:-1].values)

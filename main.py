@@ -12,7 +12,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--stock_code', nargs='+')
     parser.add_argument('--ver', choices=['v1','v2'],default='v2')
-    parser.add_argument('rl_method', choices=['dqn', 'pg', 'ac', 'a2c', 'a3c'])
+    parser.add_argument('--rl_method', choices=['dqn', 'pg', 'ac', 'a2c', 'a3c'])
     parser.add_argument('--net', choices=['dnn', 'lstm', 'cnn'],default='dnn')
     parser.add_argument('--num_steps', type=int, default=1)
     parser.add_argument('--lr', type=float, default = 0.1)
@@ -27,8 +27,8 @@ if __name__ == '__main__':
     parser.add_argument('--policy_network_name')
     parser.add_argument('--reuse_models', action='store_true')
     parser.add_argument('--learning', action='store_true')
-    parser.add_argument('--start_date', action='20170101')
-    parser.add_argument('--end_date', action='20171231')
+    parser.add_argument('--start_date', default='20201028')
+    parser.add_argument('--end_date', default='20211028')
     args = parser.parse_args()
 
     if args.backend == 'tensorflow':
@@ -39,7 +39,7 @@ if __name__ == '__main__':
     #출력 경로 설정
     output_path = os.path.join(settings.BASE_DIR, 'output/{}_{}_{}'.format(args.output_name, args.rl_method, args.net))
 
-    if not os.isdir(output_path):
+    if not os.path.isdir(output_path):
         os.makedirs(output_path)
 
     #파라미터 기록
